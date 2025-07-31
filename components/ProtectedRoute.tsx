@@ -30,6 +30,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
+    // Force a page refresh to ensure all components re-render with new auth state
+    window.location.reload();
   };
 
   const handleLogout = async () => {
