@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { apiClient, SalesStatistics } from "@/lib/api";
+import { authService } from "@/lib/auth";
 import SalesOverview from "@/components/SalesOverview";
 import TopSellingMovies from "@/components/TopSellingMovies";
 import RecentTransactions from "@/components/RecentTransactions";
@@ -11,12 +12,22 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
   const [data, setData] = useState<SalesStatistics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const checkAuthAndFetchData = async () => {
       try {
+        // First check if user is authenticated
+        const isValid = await authService.verifyToken();
+        setIsAuthenticated(isValid);
+        
+        if (!isValid) {
+          return; // Don't fetch data if not authenticated
+        }
+
+        // Only fetch data if authenticated
         setLoading(true);
         const salesData = await apiClient.getSalesStatistics();
         setData(salesData);
@@ -24,14 +35,35 @@ export default function Dashboard() {
       } catch (err) {
         console.error("Dashboard error:", err);
         setError("Failed to load dashboard data");
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    checkAuthAndFetchData();
   }, []);
 
+  // Show loading while checking authentication
+  if (isAuthenticated === null) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Checking authentication...</p>
+          </div>
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
+  // If not authenticated, let ProtectedRoute handle the login form
+  if (isAuthenticated === false) {
+    return <ProtectedRoute><div></div></ProtectedRoute>;
+  }
+
+  // Show loading while fetching data
   if (loading) {
     return (
       <ProtectedRoute>
