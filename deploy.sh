@@ -19,13 +19,9 @@ fi
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
-# Install dependencies
-echo "📦 Installing dependencies..."
-npm ci --only=production
-
-# Build for production
+# Build for production using dedicated script
 echo "🔨 Building for production..."
-NODE_ENV=production npm run build
+./build-production.sh
 
 # Check if build was successful
 if [ $? -eq 0 ]; then

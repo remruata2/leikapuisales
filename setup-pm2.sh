@@ -25,13 +25,9 @@ npm install -g pm2
 echo "📁 Creating logs directory..."
 mkdir -p logs
 
-# Install project dependencies
-echo "📦 Installing project dependencies..."
-npm ci --only=production
-
-# Build the project
+# Build the project using dedicated script
 echo "🔨 Building the project..."
-NODE_ENV=production npm run build
+./build-production.sh
 
 # Start PM2 process
 echo "🚀 Starting PM2 process..."

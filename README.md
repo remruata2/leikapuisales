@@ -112,8 +112,8 @@ The dashboard uses a separate authentication system from the main OTT applicatio
 # Install PM2 globally (if not installed)
 npm install -g pm2
 
-# Install production dependencies
-npm ci --only=production
+# Install all dependencies (including dev dependencies for build)
+npm ci
 
 # Build for production
 NODE_ENV=production npm run build

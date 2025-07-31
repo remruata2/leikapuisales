@@ -39,7 +39,7 @@ module.exports = {
       path: "/var/www/leikapui-sales-dashboard",
       "pre-deploy-local": "",
       "post-deploy":
-        "npm ci --only=production && npm run build && pm2 reload ecosystem.config.js --env production",
+        "npm ci && npm run build && pm2 reload ecosystem.config.js --env production",
       "pre-setup": "",
     },
   },
