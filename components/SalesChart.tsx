@@ -47,7 +47,7 @@ export default function SalesChart({ transactions }: SalesChartProps) {
 	const maxSales = Math.max(...dailySales.map((d) => d.sales));
 
 	return (
-		<div className="bg-white rounded-lg shadow p-4 sm:p-6 w-full overflow-hidden">
+		<div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6 w-full max-w-full overflow-hidden h-fit">
 			<div className="mb-4">
 				<h3 className="text-lg font-medium text-gray-900 break-words">
 					Sales Trend (Last 7 Days)

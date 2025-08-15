@@ -68,3 +68,18 @@ body {
 		box-sizing: border-box;
 	}
 }
+
+/* Desktop layout fixes */
+@media (min-width: 1024px) {
+	/* Ensure grid items don't overflow their containers */
+	.grid > * {
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	/* Constrain the main content area for desktop */
+	[class*="grid-cols-2"] > * {
+		max-width: 100%;
+		overflow: hidden;
+	}
+}

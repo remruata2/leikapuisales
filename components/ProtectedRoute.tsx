@@ -101,7 +101,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 			<div className="md:hidden">{user && <MobileNav user={user} />}</div>
 
 			{/* Main Content - No left margin on mobile */}
-			<div className="w-full md:ml-64 overflow-x-hidden">
+			<div className="w-full md:ml-64 md:w-[calc(100vw-16rem)] overflow-x-hidden">
 				<main className="pt-20 md:pt-6 px-2 sm:px-4 md:px-6 py-4 md:py-6 w-full max-w-full overflow-x-hidden box-border">
 					{children}
 				</main>

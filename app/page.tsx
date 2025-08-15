@@ -85,7 +85,7 @@ export default function Dashboard() {
 	}
 
 	return (
-		<div className="w-full max-w-full px-0 sm:px-2 lg:px-4 py-4 sm:py-6 lg:py-8 overflow-x-hidden box-border">
+		<div className="w-full h-full px-0 sm:px-2 lg:px-4 py-4 sm:py-6 lg:py-8 overflow-x-hidden box-border">
 			<div className="mb-6 sm:mb-8">
 				<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">
 					Movie Sales Dashboard
@@ -101,11 +101,11 @@ export default function Dashboard() {
 				averageTransactionValue={data.averageTransactionValue}
 			/>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 w-full overflow-hidden">
-				<div className="w-full overflow-hidden">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 w-full overflow-hidden auto-cols-fr">
+				<div className="w-full min-w-0 overflow-hidden">
 					<SalesChart transactions={data.transactions} />
 				</div>
-				<div className="w-full overflow-hidden">
+				<div className="w-full min-w-0 overflow-hidden">
 					<TopSellingMovies movies={data.topSellingMovies} />
 				</div>
 			</div>
