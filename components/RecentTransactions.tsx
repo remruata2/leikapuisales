@@ -1,97 +1,97 @@
 import { Transaction } from "@/lib/api";
 
 interface RecentTransactionsProps {
-  transactions: Transaction[];
+	transactions: Transaction[];
 }
 
 export default function RecentTransactions({
-  transactions,
+	transactions,
 }: RecentTransactionsProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+	const formatCurrency = (amount: number) => {
+		return new Intl.NumberFormat("en-IN", {
+			style: "currency",
+			currency: "INR",
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0,
+		}).format(amount);
+	};
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+	const formatDate = (dateString: string) => {
+		return new Date(dateString).toLocaleDateString("en-IN", {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	};
 
-  // Safety check for undefined transactions
-  if (!transactions || !Array.isArray(transactions)) {
-    return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">
-            Recent Transactions
-          </h3>
-        </div>
-        <div className="px-6 py-8 text-center">
-          <p className="text-gray-500">No transaction data available</p>
-        </div>
-      </div>
-    );
-  }
+	// Safety check for undefined transactions
+	if (!transactions || !Array.isArray(transactions)) {
+		return (
+			<div className="bg-white rounded-lg shadow">
+				<div className="px-6 py-4 border-b border-gray-200">
+					<h3 className="text-lg font-medium text-gray-900">
+						Recent Transactions
+					</h3>
+				</div>
+				<div className="px-6 py-8 text-center">
+					<p className="text-gray-500">No transaction data available</p>
+				</div>
+			</div>
+		);
+	}
 
-  return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">
-          Recent Transactions
-        </h3>
-      </div>
-      <div className="divide-y divide-gray-200">
-        {transactions.slice(0, 10).map((transaction) => (
-          <div key={transaction._id} className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-900">
-                    {transaction.user?.email || "Unknown User"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {transaction.contentId?.title || "Unknown Content"}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
-                  {formatCurrency(transaction.amount)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {formatDate(transaction.created_at)}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="bg-white rounded-lg shadow w-full overflow-hidden">
+			<div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+				<h3 className="text-lg font-medium text-gray-900 break-words">
+					Recent Transactions
+				</h3>
+			</div>
+			<div className="divide-y divide-gray-200">
+				{transactions.slice(0, 10).map((transaction) => (
+					<div key={transaction._id} className="px-4 sm:px-6 py-4">
+						<div className="flex items-center justify-between min-w-0">
+							<div className="flex items-center min-w-0 flex-1">
+								<div className="flex-shrink-0">
+									<div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center">
+										<svg
+											className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+											/>
+										</svg>
+									</div>
+								</div>
+								<div className="ml-2 sm:ml-3 min-w-0 flex-1">
+									<p className="text-sm font-medium text-gray-900 break-words">
+										{transaction.user?.email || "Unknown User"}
+									</p>
+									<p className="text-sm text-gray-500 break-words">
+										{transaction.contentId?.title || "Unknown Content"}
+									</p>
+								</div>
+							</div>
+							<div className="text-right flex-shrink-0 ml-2">
+								<p className="text-sm font-medium text-gray-900 break-words">
+									{formatCurrency(transaction.amount)}
+								</p>
+								<p className="text-sm text-gray-500 break-words">
+									{formatDate(transaction.created_at)}
+								</p>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	);
 }

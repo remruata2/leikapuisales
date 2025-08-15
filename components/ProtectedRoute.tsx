@@ -1,85 +1,111 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { authService } from "@/lib/auth";
+import { authService, User } from "@/lib/auth";
+import Sidebar from "./Sidebar";
+import MobileNav from "./MobileNav";
 import LoginForm from "./LoginForm";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+	console.log("🔐 ProtectedRoute: Component mounted");
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const isValid = await authService.verifyToken();
-        setIsAuthenticated(isValid);
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+	useEffect(() => {
+		const checkAuth = async () => {
+			try {
+				// First check if there's a token at all
+				const token = authService.getToken();
+				console.log(
+					"🔐 ProtectedRoute: Token check result:",
+					token ? "Found" : "Not found"
+				);
+				if (!token) {
+					console.log(
+						"🔐 ProtectedRoute: No token found, redirecting to login"
+					);
+					setIsAuthenticated(false);
+					setIsLoading(false);
+					return;
+				}
 
-    checkAuth();
-  }, []);
+				// Check if token is expiring soon
+				if (authService.isTokenExpiringSoon()) {
+					console.warn("Token expiring soon, redirecting to login");
+					await authService.logout();
+					setIsAuthenticated(false);
+					setIsLoading(false);
+					return;
+				}
 
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
-    // Force a page refresh to ensure all components re-render with new auth state
-    window.location.reload();
-  };
+				// Verify token with backend
+				console.log("Verifying token with backend...");
+				const isValid = await authService.verifyToken();
+				console.log("Token verification result:", isValid);
 
-  const handleLogout = async () => {
-    await authService.logout();
-    setIsAuthenticated(false);
-  };
+				if (isValid) {
+					setUser(authService.getUser());
+					setIsAuthenticated(true);
+				} else {
+					console.log(
+						"Token verification failed, clearing auth and redirecting to login"
+					);
+					await authService.logout(); // Clear invalid tokens
+					setUser(null);
+					setIsAuthenticated(false);
+				}
+			} catch (error) {
+				console.error("Auth check failed:", error);
+				setIsAuthenticated(false);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
+		checkAuth();
+	}, []);
 
-  if (!isAuthenticated) {
-    return <LoginForm onLoginSuccess={handleLoginSuccess} />;
-  }
+	const handleLoginSuccess = () => {
+		setIsAuthenticated(true);
+		setUser(authService.getUser());
+		// Force a page refresh to ensure all components re-render with new auth state
+		window.location.reload();
+	};
 
-  return (
-    <div>
-      {/* Header with logout button */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <h1 className="text-xl font-semibold text-gray-900">
-              Movie Sales Dashboard
-            </h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Welcome, {authService.getUser()?.name || "User"}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-600 hover:text-red-800"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+					<p className="mt-4 text-gray-600">Checking authentication...</p>
+				</div>
+			</div>
+		);
+	}
 
-      {/* Main content */}
-      <div className="bg-gray-50 min-h-screen">{children}</div>
-    </div>
-  );
+	if (!isAuthenticated) {
+		return <LoginForm onLoginSuccess={handleLoginSuccess} />;
+	}
+
+	return (
+		<div className="min-h-screen bg-gray-50 overflow-x-hidden">
+			{/* Desktop Sidebar - Hidden on mobile */}
+			<div className="hidden md:block">{user && <Sidebar user={user} />}</div>
+
+			{/* Mobile Navigation - Only visible on mobile */}
+			<div className="md:hidden">{user && <MobileNav user={user} />}</div>
+
+			{/* Main Content - No left margin on mobile */}
+			<div className="w-full md:ml-64 overflow-x-hidden">
+				<main className="pt-20 md:pt-6 px-2 sm:px-4 md:px-6 py-4 md:py-6 w-full max-w-full overflow-x-hidden box-border">
+					{children}
+				</main>
+			</div>
+		</div>
+	);
 }

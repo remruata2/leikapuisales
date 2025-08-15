@@ -2,50 +2,52 @@ import { Transaction } from "@/lib/api";
 import MovieSalesChart from "./MovieSalesChart";
 
 interface MovieSalesChartsProps {
-  transactions: Transaction[];
+	transactions: Transaction[];
 }
 
 export default function MovieSalesCharts({
-  transactions,
+	transactions,
 }: MovieSalesChartsProps) {
-  // Get unique movies from transactions
-  const movies = transactions.reduce((acc, transaction) => {
-    if (transaction.contentId?._id && transaction.contentId?.title) {
-      const movieId = transaction.contentId._id;
-      if (!acc.find((m) => m.id === movieId)) {
-        acc.push({
-          id: movieId,
-          title: transaction.contentId.title,
-        });
-      }
-    }
-    return acc;
-  }, [] as Array<{ id: string; title: string }>);
+	// Get unique movies from transactions
+	const movies = transactions.reduce((acc, transaction) => {
+		if (transaction.contentId?._id && transaction.contentId?.title) {
+			const movieId = transaction.contentId._id;
+			if (!acc.find((m) => m.id === movieId)) {
+				acc.push({
+					id: movieId,
+					title: transaction.contentId.title,
+				});
+			}
+		}
+		return acc;
+	}, [] as Array<{ id: string; title: string }>);
 
-  if (movies.length === 0) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Movie Sales Trends
-        </h3>
-        <p className="text-gray-500">No movie data available</p>
-      </div>
-    );
-  }
+	if (movies.length === 0) {
+		return (
+			<div className="bg-white rounded-lg shadow p-4 sm:p-6">
+				<h3 className="text-lg font-medium text-gray-900 mb-4">
+					Last 7 Days Sales Trends
+				</h3>
+				<p className="text-gray-500">No movie data available</p>
+			</div>
+		);
+	}
 
-  return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium text-gray-900">Movie Sales Trends</h3>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {movies.map((movie) => (
-          <MovieSalesChart
-            key={movie.id}
-            transactions={transactions}
-            movieId={movie.id}
-            movieTitle={movie.title}
-          />
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
+			<h3 className="text-base sm:text-lg font-medium text-gray-900 break-words">
+				Last 7 Days Sales Trends
+			</h3>
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 w-full">
+				{movies.map((movie) => (
+					<MovieSalesChart
+						key={movie.id}
+						transactions={transactions}
+						movieId={movie.id}
+						movieTitle={movie.title}
+					/>
+				))}
+			</div>
+		</div>
+	);
 }
